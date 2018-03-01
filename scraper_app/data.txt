@@ -1,0 +1,2 @@
+https://www.motorsport.com/category/motogp/news/
+body > id=page_news_browse > id=center > id=center_box > class=newsBox > id=news_list > class=items > id=news_list_weapper > class=item
