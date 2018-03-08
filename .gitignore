@@ -59,4 +59,3 @@ parts
 src/*.egg-info
 lib
 lib64
-scraper_app\migrations\*
