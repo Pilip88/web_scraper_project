@@ -90,13 +90,12 @@ def scrapCrash():
     # Regex for getting date data.
     r_for_date = re.compile(
         "(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/(?P<year>[0-9]{4})")
-    # Regex for finding scripts in text.
-    r_for_scripts = re.compile(
-        "\(.*function\(\){.*();")
     # Getting the page with links to articles,
     # and scraping them.
     page_with_links = urlopen(links_url)
     page_with_links_parsed = BeautifulSoup(page_with_links, 'html.parser')
+    for script in page_with_links_parsed("script"):
+        script.decompose()
     links_for_articles = page_with_links_parsed.select(
         ".views-field-title .field-content a")
     dates_for_articles = page_with_links_parsed.find_all(

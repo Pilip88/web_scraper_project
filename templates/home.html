@@ -26,7 +26,7 @@
                         <h1>{{ article.article_title }}</h1>
                         <br>
                         <h3 class="text-muted">{{ article.article_description }}</h3>
-                        <p>{{ article.article_link }}</p>
+                        <p>Source: <a href="{{ article.article_link }}">{{ article.article_source }}</a></p>
                         <br>
                         <p class="text-justify">{{ article.article_text|safe }}</p>
                         <h5 class="text-muted">{{ article.article_date }}</h5>
