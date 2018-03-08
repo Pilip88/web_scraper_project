@@ -73,7 +73,7 @@ def scrapMotorsport():
                 article_description=preview,
                 article_link=href,
                 article_text=text,
-                article_source="Motorsport.com"
+                article_source="Motorsport.com",
                 article_date="-".join([
                     current_year,
                     str(months.index(current_month) + 1),
@@ -114,20 +114,25 @@ def scrapCrash():
         # in db.
         # If it is, stop scraping.
         title = link_for_article.string
+        if Article.objects.filter(article_title=title).exists():
+            return
         href = article_url + link_for_article["href"]
         article_page = urlopen(href)
         article_page_parsed = BeautifulSoup(article_page, 'html.parser')
         preview = article_page_parsed.select(
             "article .article-information .field .field-items .field-item p")
-        if len(preview) > 0:
-            preview = preview[0].text
-        else:
-            preview = "No preview!"
         text = article_page_parsed.select(
             ".field > .field-items > .field-item p")
+        try:
+            preview = preview[0].text
+        except IndexError:
+            preview = text[0].text
         for i in range(len(text)):
-            text[i] = str(text[i].text)
-        text = "".join(str(text))
+            if i == 0:
+                text[i] = ''
+            else:
+                text[i] = str(text[i].text)
+        text = "".join(text)
         try:
             article_date = dates[links_for_articles.index(link_for_article)]
             article_month = article_date.group("month")
@@ -138,7 +143,7 @@ def scrapCrash():
                 article_description=preview,
                 article_link=href,
                 article_text=text,
-                article_source="Crash.net"
+                article_source="Crash.net",
                 article_date="-".join([
                     article_year,
                     article_month,
