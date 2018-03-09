@@ -7,7 +7,9 @@ from scraper_app.helper import scrapMotorsport, scrapCrash
 def home(request):
     #scrapMotorsport()
     #scrapCrash()
-    articles = Article.objects.all().order_by("-article_date")
+    articles = Article.objects.all().order_by(
+        "-article_date",
+        "-article_created")
     return render(
         request,
         'home.html',

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # chcp 65001
 import re
+import time
 from urllib.request import urlopen
+from django.db import IntegrityError
 from bs4 import BeautifulSoup
 
 from scraper_app.models import Article
@@ -82,6 +84,108 @@ def scrapMotorsport():
 
 
 def scrapCrash():
+    # Links for news and article page.
+    links_url = "http://www.crash.net/motogp/news_archive/1/content"
+    article_url = "http://www.crash.net"
+    # Lists for storing scraped dates and
+    # for storing articles before saving to db.
+    dates = []
+    articles = []
+    r_for_date = re.compile(
+        "(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/(?P<year>[0-9]{4})")
+    # Get the page with links to articles
+    # and parse it.
+    page_with_links = urlopen(
+        links_url)
+    page_with_links_parsed = BeautifulSoup(
+        page_with_links,
+        'html.parser')
+    # Get all links for articles,
+    # and dates.
+    links_for_articles = page_with_links_parsed.select(
+        ".views-field-title .field-content a")
+    dates_for_articles = page_with_links_parsed.find_all(
+        'span', class_='field-content')
+    # Iterate through all dates in page,
+    # get year, month and day,
+    # and store them in dates list.
+    for date in dates_for_articles:
+        if r_for_date.match(date.text):
+            dates.append(r_for_date.match(date.text))
+    # Iterate through all links in page.
+    for link_for_article in links_for_articles:
+        # Get the article title
+        # and check if article is already
+        # in db.
+        # If it is, stop scraping.
+        title = link_for_article.string
+        if Article.objects.filter(article_title=title).exists():
+            for article in reversed(articles):
+                try:
+                    article.save()
+                except IntegrityError:
+                    pass
+            return
+        else:
+            # Get the page with article
+            # and parse it.
+            href = article_url + link_for_article["href"]
+            article_page = urlopen(href)
+            article_page_parsed = BeautifulSoup(
+                article_page,
+                'html.parser')
+            # Get article preview and
+            # article text from the page.
+            preview = article_page_parsed.select(
+                "article .article-information .field .field-items .field-item p")
+            text = article_page_parsed.select(
+                ".field > .field-items > .field-item p")
+            # Variable for storing text.
+            article_text = ""
+            # Check if <p> element with preview exist,
+            # and if it doesnt get the preview from the text.
+            try:
+                preview = preview[0].text
+            except IndexError:
+                try:
+                    preview = text[0].text
+                except IndexError:
+                    preview = "No preview available."
+            # Iterate through text (<p> elements)
+            for i in range(len(text)):
+                if i == 0:
+                    article_text = article_text + ""
+                else:
+                    article_text = article_text + str(text[i].text)
+            # Instantiating object and adding it to the list.
+            try:
+                article_date = dates[
+                    links_for_articles.index(link_for_article)]
+                article_month = article_date.group("month")
+                article_day = article_date.group("day")
+                article_year = article_date.group("year")
+                article = Article(
+                    article_title=title,
+                    article_description=preview,
+                    article_link=href,
+                    article_text=article_text,
+                    article_source="Crash.net",
+                    article_date="-".join([
+                        article_year,
+                        article_month,
+                        article_day]))
+                articles.append(article)
+            except IndexError:
+                pass
+    # Iterate articles list and save each article in db.
+    for article in reversed(articles):
+        try:
+            article.save()
+        except IntegrityError:
+            pass
+
+
+def scrapCrasha():
     # Links for news and article page.
     links_url = "http://www.crash.net/motogp/news_archive/1/content"
     article_url = "http://www.crash.net"
