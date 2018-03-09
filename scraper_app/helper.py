@@ -91,6 +91,7 @@ def scrapCrash():
     # for storing articles before saving to db.
     dates = []
     articles = []
+    # Regex for date
     r_for_date = re.compile(
         "(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/(?P<year>[0-9]{4})")
     # Get the page with links to articles
@@ -134,12 +135,15 @@ def scrapCrash():
             article_page_parsed = BeautifulSoup(
                 article_page,
                 'html.parser')
+            # Remove script and style code from text.
+            for script in article_page_parsed(["script", "style"]):
+                script.decompose()
             # Get article preview and
             # article text from the page.
             preview = article_page_parsed.select(
                 "article .article-information .field .field-items .field-item p")
             text = article_page_parsed.select(
-                ".field > .field-items > .field-item p")
+                "article .content > .field > .field-items > .field-item p")
             # Variable for storing text.
             article_text = ""
             # Check if <p> element with preview exist,

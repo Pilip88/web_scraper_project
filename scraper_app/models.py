@@ -16,5 +16,5 @@ class Article(models.Model):
         return self.article_title
 
     def save(self, *args, **kwargs):
-        self.article_slug = slugify(self.article_title + str(self.article_date))
+        self.article_slug = slugify(self.article_title)
         super(Article, self).save(*args, **kwargs)
