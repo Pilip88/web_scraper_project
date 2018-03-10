@@ -1,0 +1,42 @@
+{% load static %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+            <br>
+            <img src="{% static 'scraper_app/images/logo_motogp.png' %}" alt="..." class="img-fluid">
+            <br>
+            <br>
+            <br>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 col-12">
+            {% for article in articles %}
+                <div style="cursor: pointer;" class="article_short">
+                    <h1>{{ article.article_title }}</h1>
+                    <br>
+                    <h3 class="text-muted">{{ article.article_description }}</h3>
+                    <p>Source: <a href="{{ article.article_link }}">{{ article.article_source }}</a></p>
+                    <br>
+                </div>
+                <div class="article_long">
+                    <p class="text-justify">{{ article.article_text|safe }}</p>
+                </div>
+                <div class="article_short">
+                    <h5 class="text-muted">{{ article.article_date }}</h5>
+                    <br>
+                    <br>
+                    <hr>
+                    <br>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.article_short').on('click', function(){
+            $(this).next('.article_long').slideToggle("slow", "swing");
+            });
+    });
+</script>
