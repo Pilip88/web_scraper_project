@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 from scraper_app.models import Article
 from scraper_app.helper import scrapMotorsport, scrapCrash
