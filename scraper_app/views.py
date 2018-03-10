@@ -5,8 +5,8 @@ from scraper_app.helper import scrapMotorsport, scrapCrash
 
 
 def home(request):
-    #scrapMotorsport()
     scrapCrash()
+    scrapMotorsport()
     articles = Article.objects.all().order_by(
         "-article_date",
         "-article_created")

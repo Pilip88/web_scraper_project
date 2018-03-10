@@ -8,8 +8,19 @@
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'scraper_app/css/home.css' %}"/>
+        <script type="text/javascript">
+            $(window).on('load', function() {
+                // Animate loader off screen
+                $(".se-pre-con").fadeOut("slow");;
+            });
+        </script>
     </head>
     <body>
+        <div class="se-pre-con"></div>
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
@@ -23,20 +34,33 @@
             <div class="row justify-content-center">
                 <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 col-12">
                     {% for article in articles %}
-                        <h1>{{ article.article_title }}</h1>
-                        <br>
-                        <h3 class="text-muted">{{ article.article_description }}</h3>
-                        <p>Source: <a href="{{ article.article_link }}">{{ article.article_source }}</a></p>
-                        <br>
-                        <p class="text-justify">{{ article.article_text|safe }}</p>
-                        <h5 class="text-muted">{{ article.article_date }}</h5>
-                        <br>
-                        <br>
-                        <hr>
-                        <br>
+                        <div style="cursor: pointer;" class="article_short">
+                            <h1>{{ article.article_title }}</h1>
+                            <br>
+                            <h3 class="text-muted">{{ article.article_description }}</h3>
+                            <p>Source: <a href="{{ article.article_link }}">{{ article.article_source }}</a></p>
+                            <br>
+                        </div>
+                        <div class="article_long">
+                            <p class="text-justify">{{ article.article_text|safe }}</p>
+                        </div>
+                        <div class="article_short">
+                            <h5 class="text-muted">{{ article.article_date }}</h5>
+                            <br>
+                            <br>
+                            <hr>
+                            <br>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('.article_short').on('click', function(){
+                    $(this).next('.article_long').slideToggle("slow", "swing");
+                    });
+            });
+        </script>
     </body>
 </html>
