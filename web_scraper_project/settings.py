@@ -37,9 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'scraper_app',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -113,12 +113,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-DATE_INPUT_FORMATS = (
-    '%m/%d/%Y',  # Crash format
-    '%Y-%m-%d'   # Motorsport format
-    )
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
