@@ -2,7 +2,14 @@
 # chcp 65001
 import re
 import time
+from time import gmtime, strftime
 from urllib.request import urlopen
+from multiprocessing import Pool, Process
+
+# without this raise AppRegistryNotReady
+import django
+django.setup()
+
 from django.db import IntegrityError
 from bs4 import BeautifulSoup
 
@@ -23,6 +30,7 @@ def findTag(tag):
 
 
 def scrapMotorsport():
+    print("scrapMotorsport started at ", strftime("%H:%M:%S", gmtime()))
     start_time = time.time()
     # Links for news and article page.
     links_url = "https://www.motorsport.com/category/motogp/news/"
@@ -125,68 +133,9 @@ def scrapMotorsport():
     print("scrapMotorsport took %s seconds." % (time.time() - start_time))
 
 
-def scrapMotorsports():
-    links_url = "https://www.motorsport.com/category/motogp/news/"
-    article_url = "https://www.motorsport.com/"
-    months = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Avg", "Sep", "Oct", "Now", "Dec"]
-    page_with_links = urlopen(links_url)
-    page_with_links_parsed = BeautifulSoup(page_with_links, 'html.parser')
-    links_and_dates = page_with_links_parsed.find_all(findTag)
-    re_year = re.compile(
-        "<span class=\"year\">(?P<year>[0-9]{4})</span>")
-    re_month = re.compile(
-        "<span class=\"month\">(?P<month>[a-zA-z]{3})</span>")
-    re_day = re.compile(
-        "<span class=\"date\">(?P<day>[0-9]+)</span>")
-    current_date = None
-    current_month = None
-    current_year = None
-    for tag in links_and_dates:
-        if tag.has_attr("class") and tag["class"] == ["dt"]:
-            for child in [str(child) for child in tag.contents]:
-                if re_year.match(child):
-                    current_year = str(re_year.match(child).group("year"))
-                if re_month.match(child):
-                    current_month = str(re_month.match(child).group("month"))
-                if re_day.match(child):
-                    current_date = str(re_day.match(child).group("day"))
-        elif tag.name == "h3":
-            for child in tag.contents:
-                if child.name == "a":
-                    racing_class_re = re.compile(
-                        "https://www.motorsport.com/f1/.*")
-                    if not racing_class_re.match(article_url + child["href"]):
-                        title = child.string
-                        href = article_url + child["href"]
-                        article_page = urlopen(href)
-                        article_page_parsed = BeautifulSoup(
-                            article_page,
-                            'html.parser')
-                        try:
-                            preview = article_page_parsed.find_all(
-                                "h2", class_="preview")[0].text
-                        except IndexError:
-                            preview = "No preview!"
-                        text = article_page_parsed.select(".content p")
-                        for i in range(len(text)):
-                            text[i] = "".join(text[i].text)
-                        text = "".join(text)
-            article = Article(
-                article_title=title,
-                article_description=preview,
-                article_link=href,
-                article_text=text,
-                article_source="Motorsport.com",
-                article_date="-".join([
-                    current_year,
-                    str(months.index(current_month) + 1),
-                    current_date]))
-            article.save()
-
-
 def scrapCrash():
+    print("scrapCrash started at ", strftime("%H:%M:%S", gmtime()))
+    start_time = time.time()
     # Links for news and article page.
     links_url = "http://www.crash.net/motogp/news_archive/1/content"
     article_url = "http://www.crash.net"
@@ -290,6 +239,7 @@ def scrapCrash():
             article.save()
         except IntegrityError:
             pass
+    print("scrapCrash took %s seconds." % (time.time() - start_time))
 
 
 def testScrap():
@@ -299,24 +249,3 @@ def testScrap():
     print("Crash.net scraped!")
     scrapMotorsport()
     print("Motorsport.com scraped!")
-
-
-import multiprocessing as mp
-
-
-def cube(x):
-    return(x**3)
-
-def test_cube(y):
-    start_time = time.time()
-    results = [cube(x) for x in range(1,y)]
-    print(results)
-    print("Took %s seconds." % (time.time() - start_time))
-
-
-def test_cube_ass(y):
-    start_time = time.time()
-    pool = mp.Pool(processes=4)
-    results = [pool.apply(cube, args=(x, )) for x in range(1,y)]
-    print(results)
-    print("Took %s seconds." % (time.time() - start_time))
