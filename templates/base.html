@@ -1,0 +1,198 @@
+{% load static %}
+<!doctype html>
+<html lang="en" style="overflow-y: scroll;">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!--
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <!--
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        -->
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- Project CSS -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}"/>
+    </head>
+    <body>
+        <div class="container-fluid">
+        <div class="row justify-content-center" id="header">
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+                <br>
+                <img src="{% static 'images/logo_motogp.png' %}" alt="..." class="img-fluid">
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="row justify-content-center" id="filter">
+            <br>
+            <br>
+            <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 col-12">
+                <div class="col-12 bg-white">
+                    <nav class="navbar navbar-light bg-white">
+                        <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <form class="form-inline">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <i class="fa fa-filter"></i>
+                                        </span>
+                                    </div>
+                                        <select id="filter-articles" class="form-control" aria-describedby="basic-addon1">
+                                            <option class="clickable" value="All">
+                                                All
+                                            </option>
+                                            <option class="clickable" value="Crash">
+                                                Crash
+                                            </option>
+                                            <option class="clickable" value="Motorsport">
+                                                Motorsport
+                                            </option>
+                                        </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <form class="form-inline" id="search-form">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon2">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" id="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                                </div>
+                            </form>
+                        </div>
+                    </nav>
+                </div>
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 col-12">
+                {% for article in articles %}
+                <div class="article {{ article.article_source }}">
+                    <div style="cursor: pointer;" class="article_short">
+                        <h3 class="text-justify article-title">{{ article.article_title }}</h3>
+                        <br>
+                        <h5 class="text-muted text-justify">{{ article.article_description }}</h5>
+                        <p>Source: <a href="{{ article.article_link }}">{{ article.article_source }}</a></p>
+                        <br>
+                    </div>
+                    <div class="article_long">
+                        <p class="text-justify">{{ article.article_text|safe }}</p>
+                    </div>
+                    <div class="article_short">
+                        <h6 class="text-muted text-justify">{{ article.article_date }}</h6>
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('.article_short').on('click', function(){
+                $(this).next('.article_long').slideToggle("slow", "swing");
+                });
+            $('select').on('change', function (e) {
+                var choise = this.value;
+                var articles = $('.article');
+                if (choise == "All") {
+                    for (var i = 0; i < articles.length; i++) {
+                        if ($(articles[i]).is(":visible") == false) {
+                            $(articles[i]).slideToggle("slow", "swing")
+                        }
+                    }
+                } else if (choise == "Crash") {
+                    for (var j = 0; j < articles.length; j++) {
+                        if ($(articles[j]).is(":visible") && $(articles[j]).attr("class") == "article Motorsport.com") {
+                            $(articles[j]).slideToggle("slow", "swing")
+                        } else if ($(articles[j]).is(":visible") == false && $(articles[j]).attr("class") == "article Crash.net") {
+                        $(articles[j]).slideToggle("slow", "swing")
+                        }
+                    }
+                } else if (choise == "Motorsport") {
+                    for (var k = 0; k < articles.length; k++) {
+                        if ($(articles[k]).is(":visible") && $(articles[k]).attr("class") == "article Crash.net") {
+                            $(articles[k]).slideToggle("slow", "swing")
+                        } else if ($(articles[k]).is(":visible") == false && $(articles[k]).attr("class") == "article Motorsport.com") {
+                            $(articles[k]).slideToggle("slow", "swing")
+                        }
+                    }
+                };
+                $('#search').keyup();
+            });
+            $('#search').on('keyup', function() {
+                var articles
+                var values = $(this).val().toLowerCase().split(" ");
+                var filter = $('#filter-articles').val();
+                if (filter == "All") {
+                    articles = $('.article');
+                } else if (filter == "Crash") {
+                    articles = $('.article.Crash\\.net');
+                    console.log(articles)
+                } else if (filter == "Motorsport") {
+                    articles = $('.article.Motorsport\\.com');
+                }
+                articles.each(function() {
+                    var title = $(this).find('.article-title').text().toLowerCase();
+                    if (containsAll(title, values) == true && $(this).is(":visible") == false) {
+                        $(this).toggle();
+                    } else if (containsAll(title, values) == false && $(this).is(":visible") == true) {
+                        $(this).toggle();
+                    }
+                })
+            });
+            $("#search-form").submit(function(e) {
+                e.preventDefault();
+            });
+            // When the user scrolls the page, execute myFunction
+            window.onscroll = function() {scrollFunction()};
+            // Get the header
+            var filter = document.getElementById("filter");
+            // Get the offset position of the navbar
+            var sticky = filter.offsetTop;
+
+            // Add the sticky class to the header when you reach its scroll position. Remove "sticky" when you leave the scroll position
+            function scrollFunction() {
+                if (window.pageYOffset >= sticky) {
+                  filter.classList.add("sticky-top");
+                } else {
+                  filter.classList.remove("sticky-top");
+                }
+            }
+            function containsAll(text, words) {
+                var counter = 0;
+                words.forEach(function(word) {
+                    if (text.includes(word)) {
+                        counter = counter + 1;
+                    };
+                });
+                if (counter == words.length) {
+                    return true;
+                } else {
+                    return false;
+                };
+            };
+            console.log(containsAll("adfjl rossi dsklajfl yamaha", ['rossi', 'yamaha']))
+        });
+        </script>
+    </body>
+</html>
