@@ -80,6 +80,8 @@ DATABASES = {
         'NAME': 'scraper_app_db',
         'USER': 'scraper_app_user',
         'PASSWORD': 'scraper_app_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
