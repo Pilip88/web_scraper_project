@@ -14,8 +14,8 @@ def home(request):
     #p2.start()
     #p1.join()
     #p2.join()
-    scrapMotorsport()
-    scrapCrash()
+    #scrapMotorsport()
+    #scrapCrash()
     articles = Article.objects.all().order_by(
         "-article_date",
         "-article_created")
